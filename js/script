@@ -1,0 +1,1370 @@
+//```javascript
+// --- Global Variables & Initial Setup ---
+const productsData = { // Simulación de base de datos de productos
+    "prod1": { id: "prod1", name: "Camisa de Lino Blanca", brand: "Marca Propia", price: 1150.00, originalPrice: 1300.00, currency: "MXN", description: "Camisa fresca de lino, perfecta para el verano. Corte slim fit.", images: ["https://via.placeholder.com/500x600/FFFFFF/1A2C5E?text=Camisa+Lino+1", "https://via.placeholder.com/500x600/F0F0F0/1A2C5E?text=Camisa+Lino+2", "https://via.placeholder.com/500x600/E0E0E0/1A2C5E?text=Camisa+Lino+3"], sizes: ["S", "M", "L", "XL"], colors: ["Blanco", "Azul Claro"], category: "camisas" },
+    "prod2": { id: "prod2", name: "Pantalón de Vestir Gris", brand: "Elegance Wear", price: 1499.00, currency: "MXN", description: "Pantalón de vestir de corte moderno, ideal para la oficina o eventos formales.", images: ["https://via.placeholder.com/500x600/FFFFFF/1A2C5E?text=Pantalón+Gris+1", "https://via.placeholder.com/500x600/F0F0F0/1A2C5E?text=Pantalón+Gris+2"], sizes: ["30", "32", "34", "36"], colors: ["Gris Oscuro", "Negro"], category: "pantalones" },
+    "prod3": { id: "prod3", name: "Camisa Oxford Azul Marino", brand: "Casual Style", price: 1299.00, currency: "MXN", description: "Clásica camisa Oxford, versátil y duradera. 100% algodón.", images: ["https://via.placeholder.com/500x600/FFFFFF/1A2C5E?text=Camisa+Oxford+1"], sizes: ["M", "L", "XL"], colors: ["Azul Marino"], category: "camisas" },
+    "prod4": { id: "prod4", name: "Pantalón Chino Beige", brand: "Urban Basics", price: 999.00, currency: "MXN", description: "Pantalón chino cómodo y estiloso para el día a día.", images: ["https://via.placeholder.com/500x600/FFFFFF/1A2C5E?text=Pantalon+Chino+1"], sizes: ["30", "32", "34"], colors: ["Beige", "Verde Olivo"], category: "pantalones" },
+    // Añadir más productos
+};
+let cart = []; // Array para almacenar { productId, size, quantity }
+let wishlist = []; // Array para almacenar productIds
+const FREE_SHIPPING_THRESHOLD = 999.00;
+let currentCurrency = "MXN"; // Podría cambiar según preferencias
+
+// --- Initial Load ---
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM cargado. Inicializando...");
+    document.getElementById('current-year-footer').textContent = new Date().getFullYear();
+    setupNavigation();
+    setupModals();
+    loadInitialData(); // Cargar carrito/wishlist de localStorage si existe
+    updateCartDisplay();
+    updateWishlistDisplay();
+    setupEventListeners(); // Configurar otros listeners globales
+
+    // Mostrar popup de newsletter (si aplica)
+    handleNewsletterPopup();
+    // Mostrar banner de cookies (si aplica)
+    handleCookieConsent();
+    // Configurar preferencias de país iniciales (ej. México por defecto)
+    updateCountryDisplay("MX");
+
+    const carousels = document.querySelectorAll('.carousel-section');
+    carousels.forEach(carousel => {
+        initializeCarousel(carousel);
+    });
+});
+
+// --- Load Cart/Wishlist from LocalStorage ---
+function loadInitialData() {
+    const savedCart = localStorage.getItem('novedadesGaytanCart');
+    const savedWishlist = localStorage.getItem('novedadesGaytanWishlist');
+    if (savedCart) {
+        cart = JSON.parse(savedCart);
+    }
+    if (savedWishlist) {
+        wishlist = JSON.parse(savedWishlist);
+    }
+    console.log("Datos iniciales cargados:", { cart, wishlist });
+}
+
+// --- Save Cart/Wishlist to LocalStorage ---
+function saveData() {
+    localStorage.setItem('novedadesGaytanCart', JSON.stringify(cart));
+    localStorage.setItem('novedadesGaytanWishlist', JSON.stringify(wishlist));
+    console.log("Datos guardados en localStorage.");
+}
+
+// --- Event Listeners Setup ---
+function setupEventListeners() {
+    // Listener para formularios de newsletter
+    const newsletterForms = document.querySelectorAll('#newsletter-form-footer, #newsletter-popup-form');
+    newsletterForms.forEach(form => {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const emailInput = form.querySelector('input[type="email"]');
+            if (emailInput && emailInput.value) {
+                console.log(`Suscripción Newsletter: ${emailInput.value}`);
+                alert('¡Gracias por suscribirte!');
+                emailInput.value = '';
+                if (form.id === 'newsletter-popup-form') {
+                    closeModal('newsletter-popup');
+                }
+            }
+        });
+    });
+
+     // Listener para el botón de aplicar código promo en carrito
+    const applyPromoBtn = document.querySelector('.cart-summary .promo-code button');
+    if (applyPromoBtn) {
+        applyPromoBtn.addEventListener('click', () => {
+            const promoInput = document.getElementById('promo-code-input-cart');
+            if (promoInput && promoInput.value) {
+                console.log(`Aplicando código promo: ${promoInput.value}`);
+                // Lógica para validar y aplicar descuento...
+                alert(`Código "${promoInput.value}" aplicado (simulación).`);
+                // updateCartTotals(); // Actualizar totales si el descuento se aplica
+            } else {
+                alert("Introduce un código de descuento.");
+            }
+        });
+    }
+
+     // Listener para el botón de checkout
+    const checkoutButton = document.getElementById('checkout-button');
+    if (checkoutButton) {
+        checkoutButton.addEventListener('click', () => {
+            if (cart.length > 0) {
+                console.log("Procediendo al pago con:", cart);
+                alert("Serás redirigido a la página de pago (simulación).");
+                // Lógica de redirección o inicio del proceso de checkout
+            } else {
+                alert("Tu bolsa está vacía.");
+            }
+        });
+    }
+
+    // Listener para botón "cargar más" en PLP (simulación)
+    const loadMoreBtn = document.getElementById('load-more-products');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+            console.log("Cargando más productos...");
+            alert("Cargando más productos (simulación).");
+            // Lógica para cargar y añadir más product cards al grid
+        });
+    }
+
+    // Listener para cambio de ordenación en PLP (simulación)
+    const sortBySelect = document.getElementById('sort-by');
+    if (sortBySelect) {
+        sortBySelect.addEventListener('change', (e) => {
+            console.log(`Ordenando productos por: ${e.target.value}`);
+            // Lógica para reordenar y volver a mostrar los productos en el grid
+            alert(`Productos ordenados por ${e.target.options[e.target.selectedIndex].text} (simulación).`);
+        });
+    }
+}
+
+
+// --- Navigation & Page Handling ---
+function setupNavigation() {
+    // Selecciona enlaces que apuntan a secciones de página o subsecciones de cuenta
+    const navLinks = document.querySelectorAll('header a[href^="#page-"], footer a[href^="#page-"], .account-link, a[href^="#plp-"], a[href^="#mujer-section"], a[href^="#hombre-section"]');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            const targetId = href ? href.substring(1) : this.dataset.target;
+
+            // Si es un enlace de sección de página (empieza con #page-)
+            if (href && href.startsWith('#page-')) {
+                e.preventDefault();
+                showPage(targetId);
+                // Actualizar URL hash para historial y bookmarks
+                window.location.hash = href;
+                 // Cerrar menú móvil si está abierto (si se implementa)
+                 // closeMobileMenu();
+            }
+            // Si es un enlace de subsección de cuenta
+            else if (this.classList.contains('account-link')) {
+                 e.preventDefault();
+                 showPage('page-account'); // Asegura que la página de cuenta esté visible
+                 showAccountSubSection(targetId);
+                 setActiveAccountLink(this);
+                 // Actualizar URL hash (opcional, puede volverse complejo)
+                 // window.location.hash = `#page-account/${targetId}`;
+            }
+            // Si es un enlace a PLP (Product Listing Page) o similar
+            else if (href && href.startsWith('#plp-')) {
+                 e.preventDefault();
+                 console.log(`Navegando a PLP: ${targetId}`);
+                 // Aquí cargarías los productos correspondientes a esa categoría/enlace
+                 loadPLPContent(targetId); // Función simulada para cargar PLP
+                 showPage('page-plp');
+                 window.location.hash = href;
+            }
+            // Si es un enlace de Género (Mujer/Hombre)
+            else if (href && (href === '#mujer-section' || href === '#hombre-section')) {
+                 e.preventDefault();
+                 console.log(`Cambiando a género: ${targetId}`);
+                 setActiveGenderLink(this);
+                 // Aquí podrías recargar el contenido de la página principal o PLPs
+                 // para mostrar productos del género seleccionado.
+                 // Por ahora, solo cambia el estilo activo.
+            }
+             // Otros enlaces internos (como #ofertas) podrían necesitar lógica específica
+             // o simplemente dejar que el navegador haga scroll si son IDs dentro de la misma página visible.
+
+        });
+    });
+
+    // Manejar carga inicial basada en el hash de la URL
+    handleInitialHash();
+}
+
+function handleInitialHash() {
+     const hash = window.location.hash;
+     let initialPageId = 'page-home'; // Por defecto
+
+     if (hash) {
+        const pageTarget = hash.substring(1);
+        // Comprobar si el hash corresponde a una página principal
+        if (document.getElementById(pageTarget) && pageTarget.startsWith('page-')) {
+            initialPageId = pageTarget;
+        }
+        // Comprobar si el hash corresponde a una PLP
+        else if (pageTarget.startsWith('plp-')) {
+            initialPageId = 'page-plp';
+            loadPLPContent(pageTarget); // Cargar contenido específico de PLP
+        }
+        // Podría añadirse lógica para hash de cuenta: #page-account/account-orders-content
+        // else if (pageTarget.startsWith('page-account/')) { ... }
+     }
+
+     console.log(`Página inicial determinada por hash (${hash}): ${initialPageId}`);
+     showPage(initialPageId);
+
+     // Activar enlaces correspondientes si es necesario (ej. género, cuenta)
+     const activeGenderLink = document.querySelector(`.gender-nav a[href="${hash}"]`);
+     if (activeGenderLink) setActiveGenderLink(activeGenderLink);
+}
+
+
+function showPage(pageId) {
+    console.log(`Intentando mostrar página: ${pageId}`);
+    document.querySelectorAll('.page-section').forEach(section => {
+        section.classList.remove('active');
+        section.style.display = 'none'; // Asegurar ocultación
+    });
+    const pageToShow = document.getElementById(pageId);
+    if (pageToShow) {
+        pageToShow.classList.add('active');
+        pageToShow.style.display = 'block';
+        console.log(`Mostrando página: ${pageId}`);
+    } else {
+        // Si no se encuentra la página, mostrar home por defecto
+        document.getElementById('page-home').classList.add('active');
+        document.getElementById('page-home').style.display = 'block';
+        console.warn(`Página ${pageId} no encontrada, mostrando page-home.`);
+    }
+    window.scrollTo(0, 0); // Scroll al inicio de la página
+}
+
+function showAccountSubSection(subsectionId) {
+    console.log(`Mostrando subsección de cuenta: ${subsectionId}`);
+    document.querySelectorAll('.account-subsection').forEach(sub => {
+        sub.classList.remove('active');
+    });
+    const subsectionToShow = document.getElementById(subsectionId);
+    if (subsectionToShow) {
+        subsectionToShow.classList.add('active');
+    } else {
+        // Mostrar dashboard por defecto si no se encuentra
+         document.getElementById('account-dashboard-content').classList.add('active');
+         console.warn(`Subsección ${subsectionId} no encontrada, mostrando dashboard.`);
+    }
+}
+
+function setActiveAccountLink(activeLink) {
+    document.querySelectorAll('.account-link.active').forEach(link => link.classList.remove('active'));
+    if (activeLink) {
+        activeLink.classList.add('active');
+    }
+}
+
+function setActiveGenderLink(activeLink) {
+     document.querySelectorAll('.gender-nav a.active').forEach(link => link.classList.remove('active'));
+     if (activeLink) {
+        activeLink.classList.add('active');
+     }
+}
+
+// Simulación de carga de contenido para PLP
+function loadPLPContent(plpId) {
+    const plpTitle = document.querySelector('#page-plp h1');
+    const productGrid = document.querySelector('#page-plp .product-grid');
+    const itemCount = document.getElementById('plp-item-count');
+
+    if (!plpTitle || !productGrid || !itemCount) return;
+
+    // Simular carga basada en ID (ropa, zapatos, etc.)
+    let category = plpId.replace('plp-', ''); // Ej: 'ropa', 'zapatos'
+    if (category === 'todos') category = null; // Mostrar todos
+
+    plpTitle.textContent = `Catálogo de ${category || 'Productos'}`; // Título dinámico
+
+    // Filtrar productos (simulación)
+    const filteredProducts = Object.values(productsData).filter(p => !category || p.category === category || category === 'novedades'); // 'novedades' podría tener lógica especial
+    itemCount.textContent = filteredProducts.length;
+
+    // Generar HTML para los productos filtrados
+    productGrid.innerHTML = filteredProducts.map(product => `
+        <article class="product-card" data-product-id="${product.id}">
+            <img src="${product.images[0]}" alt="${product.name}">
+            <button class="wishlist-icon" onclick="toggleWishlist(this, '${product.id}')">
+                <i class="${wishlist.includes(product.id) ? 'fas' : 'far'} fa-heart"></i>
+            </button>
+            <div class="product-info-card">
+                <h3>${product.name}</h3>
+                <p class="price">$${product.price.toFixed(2)} ${product.currency} ${product.originalPrice ? `<span class="original-price">$${product.originalPrice.toFixed(2)}</span>` : ''}</p>
+            </div>
+            <button class="cta-button small-cta" onclick="viewProduct('${product.id}')">Ver Detalles</button>
+        </article>
+    `).join('');
+
+    // Actualizar estado visual de iconos wishlist en la nueva grid
+    updateWishlistIcons();
+}
+
+// Función para ver detalles del producto (carga PDP)
+function viewProduct(productId) {
+    const product = productsData[productId];
+    if (!product) {
+        console.error(`Producto no encontrado: ${productId}`);
+        // Mostrar mensaje de error en la sección PDP
+        const pdpContainer = document.querySelector('#page-pdp');
+        if(pdpContainer) pdpContainer.innerHTML = '<p class="error-message">Lo sentimos, el producto no fue encontrado.</p>';
+        showPage('page-pdp');
+        return;
+    }
+    console.log(`Viendo producto: ${product.name}`);
+
+    // Generar HTML para la PDP
+    const pdpContent = `
+        <div class="pdp-container">
+            <div class="product-images">
+                <div class="main-image">
+                    <img src="${product.images[0]}" alt="${product.name}" id="pdp-main-image" onclick="openImageZoomModal('${product.images[0]}')">
+                </div>
+                <div class="thumbnail-images">
+                    ${product.images.map((img, index) => `
+                        <img src="${img}" alt="Miniatura ${index+1}" onclick="changePdpMainImage(this, '${img}')" class="${index === 0 ? 'active' : ''}">
+                    `).join('')}
+                </div>
+            </div>
+            <div class="product-info">
+                <h1>${product.name}</h1>
+                ${product.brand ? `<p class="brand-name">de ${product.brand}</p>` : ''}
+                <p class="price">$${product.price.toFixed(2)} ${product.currency} ${product.originalPrice ? `<span class="original-price">$${product.originalPrice.toFixed(2)}</span>` : ''}</p>
+
+                ${product.colors && product.colors.length > 0 ? `
+                <div class="color-selector">
+                    <p><strong>COLOR:</strong> <span id="pdp-selected-color">${product.colors[0]}</span></p>
+                    <div class="color-swatches">
+                         ${product.colors.map((color, index) => `
+                            <button style="background-color: ${getColorHex(color)};" aria-label="${color}" data-color="${color}" onclick="selectPdpColor(this, '${color}')" class="${index === 0 ? 'active' : ''}"></button>
+                         `).join('')}
+                    </div>
+                </div>` : ''}
+
+                ${product.sizes && product.sizes.length > 0 ? `
+                <div class="size-selector">
+                    <label for="pdp-size"><strong>TALLA:</strong></label>
+                    <select id="pdp-size" name="size">
+                        <option value="">Selecciona talla</option>
+                        ${product.sizes.map(size => `<option value="${size}">${size}</option>`).join('')}
+                    </select>
+                    <a href="#" class="size-guide-link" style="font-size:0.9em; margin-left:10px;" onclick="openModal('size-guide-modal')">Guía de tallas</a> <!-- Modal Guía Tallas (necesita crearse) -->
+                </div>` : ''}
+
+                <button class="cta-button" onclick="addToCart('${productId}')">AÑADIR A MI BOLSA</button>
+                <button class="wishlist-button" onclick="toggleWishlistOnPDP('${productId}', this)">
+                    <i class="${wishlist.includes(productId) ? 'fas' : 'far'} fa-heart"></i> Guardar para más tarde
+                </button>
+
+                <div class="product-details-accordion" style="margin-top:20px;">
+                    <details open>
+                        <summary><strong>Descripción</strong></summary>
+                        <p>${product.description || 'Descripción no disponible.'}</p>
+                    </details>
+                    <details>
+                        <summary><strong>Detalles del producto</strong></summary>
+                        <p>Referencia: NG-${productId.slice(-4).toUpperCase()}</p>
+                        <!-- Añadir más detalles si existen: composición, cuidados, etc. -->
+                         ${product.composition ? `<p>Composición: ${product.composition}</p>` : ''}
+                         ${product.care ? `<p>Cuidados: ${product.care}</p>` : ''}
+                    </details>
+                     <details>
+                        <summary><strong>Envío y Devoluciones</strong></summary>
+                        <p>Envío estándar (1-3 días hábiles). Devoluciones gratuitas durante 30 días. <a href="#page-help">Más info</a></p>
+                    </details>
+                </div>
+            </div>
+        </div>
+         <!-- Secciones adicionales (Productos relacionados, etc.) podrían ir aquí -->
+         <section class="related-products-carousel" style="margin-top: 40px;">
+            <h2>También te podría interesar</h2>
+            <div class="product-carousel-items">
+                <!-- Cargar productos relacionados aquí (simulación) -->
+                ${getRelatedProductsHTML(productId)}
+            </div>
+         </section>
+    `;
+    const pdpPageElement = document.querySelector('#page-pdp');
+    if (pdpPageElement) {
+        pdpPageElement.innerHTML = pdpContent;
+        showPage('page-pdp');
+         // Asegurar que el botón de wishlist en PDP refleje el estado actual
+         updateWishlistButtonPDP(productId);
+         // Actualizar iconos de wishlist en productos relacionados
+         updateWishlistIcons();
+    } else {
+        console.error("Elemento #page-pdp no encontrado.");
+    }
+}
+
+// Función auxiliar para obtener productos relacionados (simulación)
+function getRelatedProductsHTML(currentProductId) {
+    const related = Object.values(productsData)
+        .filter(p => p.id !== currentProductId && p.category === productsData[currentProductId]?.category) // Misma categoría, diferente ID
+        .slice(0, 4); // Mostrar hasta 4
+
+    if (related.length === 0) return '<p>No hay productos relacionados.</p>';
+
+    return related.map(product => `
+        <article class="product-card" data-product-id="${product.id}">
+            <img src="${product.images[0]}" alt="${product.name}">
+            <button class="wishlist-icon" onclick="toggleWishlist(this, '${product.id}')">
+                <i class="${wishlist.includes(product.id) ? 'fas' : 'far'} fa-heart"></i>
+            </button>
+             <div class="product-info-card">
+                <h3>${product.name}</h3>
+                <p class="price">$${product.price.toFixed(2)} ${product.currency}</p>
+            </div>
+            <button class="cta-button small-cta" onclick="viewProduct('${product.id}')">Ver Detalles</button>
+        </article>
+    `).join('');
+}
+
+
+function changePdpMainImage(thumbnailElement, newSrc) {
+    document.getElementById('pdp-main-image').src = newSrc;
+    // Actualizar el onclick del zoom modal para la nueva imagen principal
+    document.getElementById('pdp-main-image').setAttribute('onclick', `openImageZoomModal('${newSrc}')`);
+
+    // Highlight active thumbnail
+    document.querySelectorAll('.thumbnail-images img.active').forEach(img => img.classList.remove('active'));
+    thumbnailElement.classList.add('active');
+}
+
+function selectPdpColor(colorButtonElement, colorName) {
+    document.getElementById('pdp-selected-color').textContent = colorName;
+     // Highlight active color swatch
+    document.querySelectorAll('.pdp-container .color-swatches button.active').forEach(btn => btn.classList.remove('active'));
+    colorButtonElement.classList.add('active');
+     // Aquí podrías cambiar la imagen principal si tienes imágenes específicas por color
+     // findImageForColor(colorName);
+}
+
+// Helper para obtener HEX (muy básico, necesitaría mapeo real)
+function getColorHex(colorName) {
+    const colors = {
+        "Blanco": "#FFFFFF", "Negro": "#000000", "Azul Marino": "#1A2C5E",
+        "Gris Oscuro": "#555555", "Beige": "#F5F5DC", "Rojo": "#B51F24",
+        "Verde Olivo": "#808000", "Azul Claro": "#ADD8E6", "Gris": "#808080"
+        // Añadir más colores según sea necesario
+    };
+    // Devuelve el HEX o un gris por defecto si no se encuentra
+    return colors[colorName] || '#CCCCCC';
+}
+
+
+// --- Modal Handling ---
+let modalElement = document.getElementById('country-prefs-modal'); // Asegúrate de que este ID coincida con tu modal
+let previouslyFocusedElement;
+let focusableElementsInModal = [];
+
+// Función para abrir el modal de preferencias
+function openPreferencesModal() {
+    previouslyFocusedElement = document.activeElement; // Guardar foco actual
+    modalElement.style.display = 'block'; // Mostrar el modal
+    populateFocusableElements(); // Obtener todos los elementos enfocables del modal
+    if (focusableElementsInModal.length > 0) {
+        focusableElementsInModal[0].focus(); // Mover foco al primer elemento del modal
+    }
+    document.addEventListener('keydown', handleModalKeyDown);
+}
+
+// Función para cerrar el modal
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none'; // Ocultar el modal
+        document.removeEventListener('keydown', handleModalKeyDown);
+        if (previouslyFocusedElement) {
+            previouslyFocusedElement.focus(); // Devolver foco
+        }
+    }
+}
+
+// Función para obtener elementos enfocables dentro del modal
+function populateFocusableElements() {
+    focusableElementsInModal = Array.from(modalElement.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'));
+}
+
+// Manejar teclas dentro del modal
+function handleModalKeyDown(event) {
+    if (event.key === 'Escape') {
+        closeModal('country-prefs-modal'); // Aquí debes usar el ID correcto del modal
+        return;
+    }
+
+    if (event.key === 'Tab') {
+        const firstFocusable = focusableElementsInModal[0];
+        const lastFocusable = focusableElementsInModal[focusableElementsInModal.length - 1];
+
+        if (event.shiftKey) { // Shift + Tab
+            if (document.activeElement === firstFocusable) {
+                event.preventDefault();
+                lastFocusable.focus();
+            }
+        } else { // Tab
+            if (document.activeElement === lastFocusable) {
+                event.preventDefault();
+                firstFocusable.focus();
+            }
+        }
+    }
+}
+
+function setupModals() {
+    // Botón de preferencias de país/moneda
+    const countryPrefsBtn = document.getElementById('country-preferences-btn');
+    if (countryPrefsBtn) {
+        countryPrefsBtn.addEventListener('click', () => openPreferencesModal());
+    }
+
+    // Botones para cerrar modales (X)
+    document.querySelectorAll('.modal .close-button').forEach(button => {
+        button.addEventListener('click', function() {
+            // Encuentra el modal padre y ciérralo
+            const modal = this.closest('.modal');
+            if (modal) {
+                closeModal(modal.id);
+            }
+        });
+    });
+
+    // Cerrar modal si se hace clic fuera del contenido
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            // Si el clic fue directamente en el fondo del modal (no en el modal-content)
+            if (e.target === this) {
+                closeModal(this.id);
+            }
+        });
+    });
+}
+
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if(modal) {
+        modal.classList.add('active');
+        console.log(`Modal ${modalId} abierto.`);
+        // Opcional: Evitar scroll del body mientras el modal está abierto
+        // document.body.style.overflow = 'hidden';
+    } else {
+        console.error(`Modal con ID ${modalId} no encontrado.`);
+    }
+}
+
+function openImageZoomModal(imageSrc) {
+    const zoomedImage = document.getElementById('zoomed-image-src');
+    if (zoomedImage) {
+        zoomedImage.src = imageSrc;
+        openModal('image-zoom-modal');
+    } else {
+        console.error("Elemento #zoomed-image-src no encontrado para el modal de zoom.");
+    }
+}
+
+// --- Cart Functionality ---
+function addToCart(productId) {
+    const product = productsData[productId];
+    if (!product) {
+        console.error(`Intento de añadir producto inválido: ${productId}`);
+        return;
+    }
+
+    // Verificar si el producto está en la PDP para obtener talla y color
+    let sizeSelected = null;
+    let colorSelected = null;
+    const pdpSizeSelector = document.getElementById('pdp-size');
+    const pdpColorDisplay = document.getElementById('pdp-selected-color'); // Usamos el span que muestra el color
+
+    if (pdpSizeSelector && document.body.contains(pdpSizeSelector)) { // Si estamos en PDP
+        sizeSelected = pdpSizeSelector.value;
+        if (product.sizes && product.sizes.length > 0 && !sizeSelected) {
+            alert("Por favor, selecciona una talla.");
+            return; // No añadir si la talla es requerida y no seleccionada
+        }
+        if (pdpColorDisplay) {
+             colorSelected = pdpColorDisplay.textContent; // Obtener color del span
+        }
+    } else {
+        // Si se añade desde PLP o Carousel, podríamos asumir talla/color por defecto o no requerirlo
+        // Para este ejemplo, si no estamos en PDP, no requerimos talla/color específico.
+        console.log("Añadiendo desde PLP/Carousel, sin talla/color específico.");
+    }
+
+    // Buscar si ya existe un item EXACTAMENTE igual (mismo ID, talla y color)
+    const existingItemIndex = cart.findIndex(item =>
+        item.productId === productId &&
+        item.size === sizeSelected &&
+        item.color === colorSelected
+    );
+
+    if (existingItemIndex > -1) {
+        // Si existe, incrementar cantidad
+        cart[existingItemIndex].quantity++;
+        console.log(`Cantidad incrementada para: ${product.name} (Talla: ${sizeSelected || 'N/A'}, Color: ${colorSelected || 'N/A'})`);
+    } else {
+        // Si no existe, añadir nuevo item al carrito
+        cart.push({
+            productId: productId,
+            size: sizeSelected,
+            color: colorSelected,
+            quantity: 1,
+            // Guardar datos básicos del producto para fácil acceso en el carrito
+            name: product.name,
+            price: product.price,
+            currency: product.currency,
+            image: product.images[0] // Imagen principal
+         });
+        console.log(`Producto añadido al carrito: ${product.name} (Talla: ${sizeSelected || 'N/A'}, Color: ${colorSelected || 'N/A'})`);
+    }
+
+    saveData(); // Guardar carrito en localStorage
+    updateCartDisplay();
+    // Notificación visual (podría ser un modal pequeño o un mensaje)
+    showCartNotification(product.name);
+}
+
+function showCartNotification(productName) {
+    // Implementación simple con alert, podría ser un toast/snackbar más elegante
+    alert(`${productName} añadido a la bolsa!`);
+    // Podría animar el icono del carrito brevemente
+    const cartIcon = document.querySelector('.user-actions a[href="#page-cart"] i');
+    if (cartIcon) {
+        cartIcon.classList.add('animate__animated', 'animate__tada'); // Requiere Animate.css
+        setTimeout(() => {
+            cartIcon.classList.remove('animate__animated', 'animate__tada');
+        }, 1000);
+    }
+}
+
+
+function updateCartDisplay() {
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    console.log(`Actualizando display del carrito. Total items: ${totalItems}`);
+
+    // Actualizar contadores en el header
+    document.querySelectorAll('.cart-count').forEach(el => el.textContent = `(${totalItems})`);
+
+    // Si estamos en la página del carrito, actualizar su contenido
+    const cartPage = document.getElementById('page-cart');
+    if (cartPage && cartPage.classList.contains('active')) {
+        const cartItemsContainer = cartPage.querySelector('.cart-items-container');
+        const cartSummary = cartPage.querySelector('.cart-summary');
+        const emptyCartMessage = cartPage.querySelector('.empty-cart-message');
+        const cartPageItemCount = cartPage.querySelector('.cart-page-item-count');
+
+        if (cartPageItemCount) cartPageItemCount.textContent = `(${totalItems} artículo${totalItems !== 1 ? 's' : ''})`;
+
+        if (!cartItemsContainer || !cartSummary || !emptyCartMessage) {
+            console.error("Elementos clave no encontrados en la página del carrito.");
+            return;
+        }
+
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = '<p class="empty-cart-message">Tu bolsa está vacía.</p>';
+            cartSummary.style.display = 'none';
+            emptyCartMessage.style.display = 'block';
+        } else {
+            cartSummary.style.display = 'block';
+            emptyCartMessage.style.display = 'none';
+            // Generar HTML para cada item del carrito
+            cartItemsContainer.innerHTML = cart.map((item, index) => `
+                <div class="cart-item" data-cart-item-index="${index}">
+                    <img src="${item.image || 'https://via.placeholder.com/80x100?text=No+Img'}" alt="${item.name}">
+                    <div class="item-details">
+                        <p><strong>${item.name}</strong></p>
+                        ${item.size ? `<p>Talla: ${item.size}</p>` : ''}
+                        ${item.color ? `<p>Color: ${item.color}</p>` : ''}
+                        <p class="cart-item-price">Precio: $${item.price.toFixed(2)} ${item.currency}</p>
+                        <div class="quantity-controls">
+                             <label for="quantity-${index}" class="sr-only">Cantidad:</label> <!-- sr-only para accesibilidad si se oculta visualmente -->
+                             <input type="number" id="quantity-${index}" value="${item.quantity}" min="1" onchange="updateCartItemQuantity(${index}, this.value)">
+                             <button class="remove-item" onclick="removeCartItem(${index})">Eliminar</button>
+                        </div>
+                    </div>
+                    <p class="item-total-price">$${(item.price * item.quantity).toFixed(2)}</p>
+                </div>
+            `).join('');
+        }
+        updateCartTotals(); // Calcular y mostrar totales
+    }
+}
+
+function updateCartItemQuantity(index, newQuantity) {
+    newQuantity = parseInt(newQuantity);
+    if (isNaN(newQuantity) || newQuantity < 1) {
+        // Si la cantidad no es válida, revertir al valor anterior o poner 1
+        console.warn(`Cantidad inválida (${newQuantity}) para item ${index}. Revertiendo.`);
+        const inputEl = document.getElementById(`quantity-${index}`);
+        if(inputEl) inputEl.value = cart[index].quantity; // Revertir visualmente
+        return; // No hacer cambios en los datos
+    }
+
+    console.log(`Actualizando cantidad para item ${index} a ${newQuantity}`);
+    cart[index].quantity = newQuantity;
+    saveData();
+    updateCartDisplay(); // Actualizar toda la vista del carrito
+}
+
+function removeCartItem(index) {
+    const removedItem = cart.splice(index, 1);
+    if (removedItem && removedItem.length > 0) {
+        console.log(`Item eliminado del carrito: ${removedItem[0].name}`);
+        saveData();
+        updateCartDisplay();
+    }
+}
+
+function updateCartTotals() {
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    let shippingCost = 0; // Asumir envío gratis inicialmente o calcular basado en reglas
+
+    const freeShippingPromo = document.querySelector('.free-shipping-promo');
+    const amountForFreeShippingEl = document.getElementById('amount-for-free-shipping');
+
+    // Lógica de costo de envío (simplificada)
+    if (cart.length > 0 && subtotal < FREE_SHIPPING_THRESHOLD) {
+        shippingCost = 150.00; // Costo fijo si no alcanza el umbral
+        if (freeShippingPromo) freeShippingPromo.style.display = 'block';
+        if (amountForFreeShippingEl) amountForFreeShippingEl.textContent = `$${(FREE_SHIPPING_THRESHOLD - subtotal).toFixed(2)} ${currentCurrency}`;
+    } else {
+        if (freeShippingPromo) freeShippingPromo.style.display = 'none';
+        // Si subtotal >= threshold o carrito vacío, envío es 0 (o 'GRATIS')
+        shippingCost = 0;
+    }
+
+    const total = subtotal + shippingCost;
+
+    // Actualizar elementos en el resumen del carrito
+    const subtotalDisplay = document.getElementById('cart-subtotal-display');
+    const shippingDisplay = document.getElementById('cart-shipping-display');
+    const totalDisplay = document.getElementById('cart-total-display');
+
+    if(subtotalDisplay) subtotalDisplay.textContent = `$${subtotal.toFixed(2)} ${currentCurrency}`;
+    if(shippingDisplay) shippingDisplay.textContent = shippingCost > 0 ? `$${shippingCost.toFixed(2)} ${currentCurrency}` : 'GRATIS';
+    if(totalDisplay) totalDisplay.textContent = `$${total.toFixed(2)} ${currentCurrency}`;
+
+    console.log(`Totales actualizados: Subtotal=${subtotal}, Envío=${shippingCost}, Total=${total}`);
+}
+
+// --- Wishlist Functionality ---
+function toggleWishlist(buttonElement, productId) {
+    if (!buttonElement || !productId) return;
+
+    const heartIcon = buttonElement.querySelector('i');
+    if (!heartIcon) return;
+
+    if (wishlist.includes(productId)) {
+        // Quitar de la wishlist
+        wishlist = wishlist.filter(id => id !== productId);
+        heartIcon.classList.remove('fas'); // Icono sólido
+        heartIcon.classList.add('far');   // Icono hueco
+        buttonElement.classList.remove('active');
+        console.log(`Producto ${productId} eliminado de wishlist`);
+    } else {
+        // Añadir a la wishlist
+        wishlist.push(productId);
+        heartIcon.classList.remove('far');
+        heartIcon.classList.add('fas');
+        buttonElement.classList.add('active');
+        console.log(`Producto ${productId} añadido a wishlist`);
+    }
+    saveData();
+    updateWishlistDisplay();
+     // Sincronizar botón en PDP si está visible
+    updateWishlistButtonPDP(productId);
+}
+
+function toggleWishlistOnPDP(productId, buttonElement) {
+     if (!buttonElement || !productId) return;
+     const heartIcon = buttonElement.querySelector('i');
+     if (!heartIcon) return;
+
+     if (wishlist.includes(productId)) {
+        wishlist = wishlist.filter(id => id !== productId);
+        heartIcon.classList.remove('fas');
+        heartIcon.classList.add('far');
+         console.log(`Producto ${productId} eliminado de wishlist desde PDP`);
+     } else {
+        wishlist.push(productId);
+        heartIcon.classList.remove('far');
+        heartIcon.classList.add('fas');
+         console.log(`Producto ${productId} añadido a wishlist desde PDP`);
+     }
+     saveData();
+     updateWishlistDisplay();
+     // Sincronizar iconos en PLP/Carousels si están visibles
+     updateWishlistIcons();
+}
+
+
+function updateWishlistDisplay() {
+    const count = wishlist.length;
+    console.log(`Actualizando display de wishlist. Total items: ${count}`);
+
+    // Actualizar contadores en header
+    document.querySelectorAll('.wishlist-count').forEach(el => el.textContent = `(${count})`);
+    // Actualizar contador en la página de wishlist si existe
+    const wishlistPageCount = document.querySelector('.wishlist-page-count');
+     if (wishlistPageCount) wishlistPageCount.textContent = count;
+
+
+    // Si estamos en la página de wishlist, actualizar su contenido
+    const wishlistPage = document.getElementById('page-wishlist');
+    if (wishlistPage && wishlistPage.classList.contains('active')) {
+        const itemsContainer = wishlistPage.querySelector('.wishlist-items-container');
+        const emptyMessage = wishlistPage.querySelector('.empty-wishlist-message');
+
+        if (!itemsContainer || !emptyMessage) return;
+
+        if (count === 0) {
+            itemsContainer.innerHTML = '<p class="empty-wishlist-message">No has guardado ningún artículo todavía.</p>';
+             emptyMessage.style.display = 'block';
+        } else {
+             emptyMessage.style.display = 'none';
+            // Generar HTML para items de wishlist (similar a product card)
+            itemsContainer.innerHTML = wishlist.map(productId => {
+                const product = productsData[productId];
+                if (!product) return ''; // Si el producto ya no existe
+                return `
+                    <article class="product-card" data-product-id="${product.id}">
+                        <img src="${product.images[0]}" alt="${product.name}">
+                         <button class="wishlist-icon active" onclick="toggleWishlist(this, '${product.id}')"> <!-- Siempre activo aquí -->
+                            <i class="fas fa-heart"></i>
+                         </button>
+                         <div class="product-info-card">
+                            <h3>${product.name}</h3>
+                            <p class="price">$${product.price.toFixed(2)} ${product.currency} ${product.originalPrice ? `<span class="original-price">$${product.originalPrice.toFixed(2)}</span>` : ''}</p>
+                         </div>
+                         <button class="cta-button" onclick="viewProduct('${product.id}')">Ver Producto</button>
+                         <button class="cta-button secondary small-cta" onclick="moveWishlistItemToCart('${product.id}')" style="margin-top: 5px;">Mover a Bolsa</button>
+                    </article>
+                `;
+            }).join('');
+             // Asegurar que los product cards en wishlist usen el grid layout si es necesario
+             itemsContainer.classList.add('product-grid'); // Reutilizar estilo grid
+             // Ajustar el número de columnas si es necesario para wishlist page
+             itemsContainer.style.setProperty('--product-grid-columns', '4'); // O el número deseado
+        }
+    }
+    // Actualizar estado visual de todos los iconos de corazón en la página
+    updateWishlistIcons();
+}
+
+function updateWishlistIcons() {
+    // Actualiza todos los botones .wishlist-icon en la página
+    document.querySelectorAll('.wishlist-icon').forEach(button => {
+        const card = button.closest('.product-card');
+        if (!card) return;
+        const productId = card.dataset.productId;
+        const heartIcon = button.querySelector('i');
+        if (!productId || !heartIcon) return;
+
+        if (wishlist.includes(productId)) {
+            heartIcon.classList.remove('far');
+            heartIcon.classList.add('fas');
+            button.classList.add('active');
+        } else {
+            heartIcon.classList.remove('fas');
+            heartIcon.classList.add('far');
+            button.classList.remove('active');
+        }
+    });
+}
+function updateWishlistButtonPDP(productId) {
+    // Actualiza específicamente el botón de wishlist en la PDP si está visible
+    const pdpButton = document.querySelector('#page-pdp .wishlist-button');
+    if (pdpButton && document.body.contains(pdpButton)) {
+         const heartIcon = pdpButton.querySelector('i');
+         if (!heartIcon) return;
+        if (wishlist.includes(productId)) {
+            heartIcon.classList.remove('far');
+            heartIcon.classList.add('fas');
+        } else {
+            heartIcon.classList.remove('fas');
+            heartIcon.classList.add('far');
+        }
+    }
+}
+
+
+function moveWishlistItemToCart(productId) {
+    console.log(`Moviendo ${productId} de wishlist a carrito`);
+    // 1. Añadir al carrito (sin talla/color por defecto, o podrías abrir un modal para seleccionarlos)
+    const product = productsData[productId];
+    if (!product) return;
+
+     // Simplificado: añadir sin talla/color específico. Para mejorar, mostrar modal de selección.
+     const existingItemIndex = cart.findIndex(item => item.productId === productId && !item.size && !item.color); // Busca item sin talla/color
+     if (existingItemIndex > -1) {
+         cart[existingItemIndex].quantity++;
+     } else {
+         cart.push({ productId: productId, size: null, color: null, quantity: 1, name: product.name, price: product.price, currency: product.currency, image: product.images[0] });
+     }
+
+    // 2. Quitar de la wishlist
+    wishlist = wishlist.filter(id => id !== productId);
+
+    // 3. Actualizar y guardar
+    saveData();
+    updateWishlistDisplay(); // Refresca la página de wishlist
+    updateCartDisplay(); // Actualiza contador de carrito
+    alert(`${product.name} movido a la bolsa.`);
+}
+
+// --- Cookie Consent ---
+function handleCookieConsent() {
+    const banner = document.getElementById('cookie-consent-banner');
+    if (!banner) return;
+
+    if (localStorage.getItem('cookiesAccepted') === 'true') {
+        banner.style.display = 'none';
+        console.log("Cookies ya aceptadas.");
+    } else {
+        banner.style.display = 'flex'; // O 'block' según tu CSS
+        console.log("Mostrando banner de cookies.");
+    }
+}
+
+function acceptCookies() {
+    localStorage.setItem('cookiesAccepted', 'true');
+    const banner = document.getElementById('cookie-consent-banner');
+    if (banner) {
+        banner.style.display = 'none';
+    }
+    console.log("Cookies aceptadas por el usuario.");
+}
+
+// --- Newsletter Popup ---
+function handleNewsletterPopup() {
+     const popup = document.getElementById('newsletter-popup');
+     if (!popup) return;
+
+    // Comprobar si ya se mostró o si el usuario ya está suscrito (si tuvieras esa lógica)
+    if (localStorage.getItem('newsletterPopupShown') === 'true') {
+        console.log("Popup de newsletter ya mostrado anteriormente.");
+        return;
+    }
+
+    // Mostrar después de un tiempo (ej. 5 segundos)
+    setTimeout(() => {
+        // Podrías añadir una comprobación extra, p.ej., no mostrar en página de checkout
+        // if (currentPageId !== 'page-checkout') { ... }
+        openModal('newsletter-popup');
+        localStorage.setItem('newsletterPopupShown', 'true'); // Marcar como mostrado
+    }, 5000); // 5 segundos
+}
+
+// --- User Account ---
+function logout() {
+    // Aquí iría la lógica real de logout (limpiar tokens, etc.)
+    alert("Has cerrado sesión (simulación).");
+    // Limpiar datos de usuario simulados (si los hubiera)
+    // Por ejemplo, podrías limpiar el carrito/wishlist o redirigir a home
+    // cart = [];
+    // wishlist = [];
+    // saveData();
+    // updateCartDisplay();
+    // updateWishlistDisplay();
+    showPage('page-home'); // Redirigir a la página de inicio
+    window.location.hash = '#page-home'; // Limpiar hash
+}
+
+// --- Country/Currency Preferences ---
+function updateCountryPreferences() {
+    const selectElement = document.getElementById('modal-comprar-en-pais');
+    if (!selectElement) return;
+    const selectedCountryCode = selectElement.value;
+
+    updateCountryDisplay(selectedCountryCode); // Actualiza UI
+    closeModal('country-prefs-modal');
+    alert(`Preferencias actualizadas (simulación). Recargando contenido...`);
+    // Aquí deberías recargar precios, opciones de envío, etc.
+    // Por ejemplo, podrías volver a llamar a handleInitialHash() o una función de recarga
+    // location.reload(); // O una recarga más inteligente
+}
+
+function updateCountryDisplay(countryCode) {
+     let currency = "MXN";
+     let countryName = "México";
+     let flag = "mx.png";
+     let currencySymbol = "$"; // Símbolo por defecto
+
+     switch (countryCode) {
+        case "MX":
+            currency = "MXN"; countryName = "México"; flag = "mx.png"; currencySymbol = "$";
+            break;
+        case "ES":
+            currency = "EUR"; countryName = "España"; flag = "es.png"; currencySymbol = "€";
+            break;
+        case "US":
+            currency = "USD"; countryName = "Estados Unidos"; flag = "us.png"; currencySymbol = "$";
+            break;
+         case "OTHER":
+             currency = "USD"; countryName = "Otro"; flag = "eu.png"; currencySymbol = "$"; // Asumir USD para otros, bandera genérica
+             break;
+        default:
+             // Mantener México por defecto si el código no es reconocido
+             currency = "MXN"; countryName = "México"; flag = "mx.png"; currencySymbol = "$";
+             break;
+     }
+
+     console.log(`Actualizando display a: País=${countryName}, Moneda=${currency}`);
+     currentCurrency = currency; // Actualizar variable global de moneda
+
+     // Actualizar bandera y texto en el botón del header
+     const headerFlag = document.getElementById('current-country-flag');
+     const headerButton = document.getElementById('country-preferences-btn');
+     if (headerFlag && headerButton) {
+         headerFlag.src = `https://flagcdn.com/16x12/${flag}`;
+         headerFlag.alt = `Bandera ${countryName}`;
+         // Actualizar el texto del botón, incluyendo el span para la bandera si es necesario
+         headerButton.innerHTML = `<img src="https://flagcdn.com/16x12/${flag}" alt="Bandera ${countryName}" id="current-country-flag"> ${countryName} (${currency})`;
+     }
+
+     // Actualizar moneda en el modal
+     const modalCurrencyDisplay = document.getElementById('modal-display-moneda');
+     if (modalCurrencyDisplay) {
+         modalCurrencyDisplay.textContent = `${currency} (${countryName})`;
+     }
+
+     // Actualizar los precios visibles en la página (simulación básica)
+     // Una implementación real requeriría obtener precios de una API o recalcularlos
+     document.querySelectorAll('.price, .original-price, .item-total-price, #cart-subtotal-display, #cart-shipping-display, #cart-total-display, #amount-for-free-shipping').forEach(el => {
+         // Esta es una SIMULACIÓN MUY BÁSICA - NO convierte valores, solo cambia el símbolo/código
+         // Necesitarías recalcular todos los precios basados en la nueva moneda/país
+         let text = el.textContent || "";
+         text = text.replace(/MXN|EUR|USD|\$/g, '').trim(); // Quita códigos/símbolos anteriores
+         // Formatear con nuevo símbolo o código
+         if (el.classList.contains('price') || el.classList.contains('original-price') || el.classList.contains('item-total-price') || el.id.includes('-display') || el.id.includes('-shipping')) {
+            // Para precios y totales, añadir símbolo y código
+            el.textContent = `${currencySymbol}${text} ${currency}`;
+         }
+         // Podrías tener formatos diferentes para otros elementos
+     });
+
+     // Actualizar umbral de envío gratis (si varía por país)
+     // FREE_SHIPPING_THRESHOLD = getThresholdForCountry(countryCode);
+     // updateCartTotals(); // Recalcular totales con nuevo umbral/precios
+}
+
+// --- MOBILE MENU TOGGLE ---
+const mobileMenuButton = document.getElementById('mobile-menu-toggle');
+const mainNav = document.querySelector('nav.main-nav');
+const genderNav = document.querySelector('.gender-nav'); // Select gender-nav
+
+if (mobileMenuButton && mainNav && genderNav) {
+    mobileMenuButton.addEventListener('click', () => {
+        const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true' || false;
+        mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+
+        // Actualizar aria-label dinámicamente
+        if (!isExpanded) {
+            mobileMenuButton.setAttribute('aria-label', 'Cerrar menú');
+        } else {
+            mobileMenuButton.setAttribute('aria-label', 'Abrir menú');
+        }
+
+        // Toggle main navigation menu
+        mainNav.classList.toggle('mobile-menu-active');
+        
+        // Toggle gender navigation (assuming it's part of the mobile dropdown)
+        // We can use the same 'mobile-menu-active' if its display is handled correctly in CSS
+        // or a more specific class if needed.
+        // For simplicity, let's assume .gender-nav should also be display: block when mainNav is active.
+        // The CSS for .gender-nav already has display:none and width:100% for mobile.
+        // We need a way to make it display: flex or display: block when the mobile menu is open.
+        // Let's add a specific class for gender-nav visibility in mobile menu state.
+        genderNav.classList.toggle('gender-nav-mobile-active');
+
+        // Toggle icon (bars to X and vice-versa)
+        const icon = mobileMenuButton.querySelector('i');
+        if (icon) {
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times'); // Assumes Font Awesome 'times' icon
+        }
+    });
+}
+
+// --- Carousel Functionality ---
+function initializeCarousel(carouselElement) {
+    const track = carouselElement.querySelector('.carousel-track');
+    const viewport = carouselElement.querySelector('.carousel-viewport');
+    const prevButton = carouselElement.querySelector('.carousel-arrow.prev');
+    const nextButton = carouselElement.querySelector('.carousel-arrow.next');
+    const items = track.querySelectorAll('.product-card');
+
+    if (!track || !viewport || !prevButton || !nextButton || items.length === 0) {
+        // console.warn('Carousel elements not found or no items in:', carouselElement.id);
+        if(prevButton) prevButton.style.display = 'none'; // Hide arrows if setup fails
+        if(nextButton) nextButton.style.display = 'none';
+        return;
+    }
+
+    let currentOffset = 0;
+    const itemWidth = items[0].offsetWidth; // Assumes all items have the same width
+    const gap = parseInt(window.getComputedStyle(track).gap) || 20; // Get gap from CSS or default
+    const scrollDistance = itemWidth + gap; // Distance to scroll one item + gap
+
+    // Set transition on the track for smooth scrolling (can also be set in CSS)
+    track.style.transition = 'transform 0.5s ease-in-out';
+
+    function updateArrows() {
+        const viewportWidth = viewport.offsetWidth;
+        const trackScrollWidth = track.scrollWidth;
+
+        // Disable prev button if at the beginning
+        prevButton.disabled = currentOffset >= 0;
+
+        // Disable next button if at the end
+        // Add a small tolerance (e.g., 1px) for floating point inaccuracies
+        nextButton.disabled = currentOffset <= -(trackScrollWidth - viewportWidth) + 1;
+
+        // Basic visual feedback for disabled state (better to style with CSS :disabled selector)
+        prevButton.style.opacity = prevButton.disabled ? '0.5' : '1';
+        prevButton.style.cursor = prevButton.disabled ? 'default' : 'pointer';
+        nextButton.style.opacity = nextButton.disabled ? '0.5' : '1';
+        nextButton.style.cursor = nextButton.disabled ? 'default' : 'pointer';
+    }
+
+    nextButton.addEventListener('click', () => {
+        const viewportWidth = viewport.offsetWidth;
+        const trackScrollWidth = track.scrollWidth;
+        const maxNegativeOffset = -(trackScrollWidth - viewportWidth);
+
+        if (currentOffset > maxNegativeOffset) {
+            currentOffset -= scrollDistance;
+            // Ensure we don't scroll beyond the very end
+            if (currentOffset < maxNegativeOffset) {
+                currentOffset = maxNegativeOffset;
+            }
+            track.style.transform = `translateX(${currentOffset}px)`;
+        }
+        updateArrows();
+    });
+
+    prevButton.addEventListener('click', () => {
+        if (currentOffset < 0) {
+            currentOffset += scrollDistance;
+            // Ensure we don't scroll to a positive offset (beyond the start)
+            if (currentOffset > 0) {
+                currentOffset = 0;
+            }
+            track.style.transform = `translateX(${currentOffset}px)`;
+        }
+        updateArrows();
+    });
+
+    // Initial state of arrows
+    updateArrows();
+
+    // Optional: Recalculate on window resize to ensure arrows are correctly updated
+    // A more robust solution might also adjust currentOffset if items visibility changes drastically
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            // Recalculate itemWidth as it might change with viewport (e.g. if items are % based)
+            // const newItemWidth = items[0].offsetWidth;
+            // scrollDistance = newItemWidth + gap; 
+            // Potentially adjust currentOffset here if needed, then update arrows
+            updateArrows();
+        }, 250); // Debounce resize event
+    });
+}
+
+// --- Datos de Productos para Carruseles ---
+const productosParaCombinar = [
+    {
+        id: "JOHCAMVLSPOALISNEGT1453010",
+        name: "Camisa Vestir M/ L Slim Fit Liso John Henry Hombre 010",
+        price: "$1030.00",
+        imageSrc: "https://i.postimg.cc/ZR1pdv1w/John-Henry-Camisa-Vestir-M-L-Slim-Fit-Pol-Alg-Liso-Negro-010.jpg",
+        altText: "Camisa de vestir John Henry hombre color negro",
+        productPageUrl: "/productos/john-henry-camisa-010"
+    },
+    {
+        id: "MARCAMVMLPOALISBEIT1453001",
+        name: "Camisa Vestir M/ L Liso Mariscal Hombre 001",
+        price: "$879.00",
+        imageSrc: "https://i.postimg.cc/4NyzWnk4/Mariscal-Camisa-Vestir-M-L-Pol-Alg-Liso-Beige-001.jpg",
+        altText: "Camisa de vestir Mariscal hombre color beige",
+        productPageUrl: "/productos/mariscal-camisa-001"
+    },
+    {
+        id: "JOHCAMVMLPOALISMART1453010",
+        name: "Camisa Vestir M/ L Slim Fit Liso John Henry Hombre 010 (Marino)",
+        price: "$1030.00",
+        imageSrc: "https://i.postimg.cc/Zq58tS8x/John-Henry-Camisa-Vestir-M-L-Slim-Fit-Pol-Alg-Liso-Marino-010.jpg",
+        altText: "Camisa de vestir John Henry hombre color marino",
+        productPageUrl: "/productos/john-henry-camisa-marino-010"
+    },
+    {
+        id: "EXCCAMVLSPOALISAMAT1453002",
+        name: "Camisa Vestir M/ L Slim Fit Liso Excellence Hombre 002",
+        price: "$679.00",
+        imageSrc: "https://i.postimg.cc/W4Dt0P03/Excellence-Camisa-Vestir-M-L-Slim-Fit-Pol-Alg-Liso-Amarillo-002.jpg",
+        altText: "Camisa de vestir Excellence hombre color amarillo",
+        productPageUrl: "/productos/excellence-camisa-002"
+    },
+    {
+        id: "MARPANVESPOVFANCAFT42AD109",
+        name: "Pantalón Vestir Fantasía Mariscal Hombre 109",
+        price: "$999.00",
+        imageSrc: "https://i.postimg.cc/9QrHXP33/Mariscal-Pantal-n-Vestir-Pol-Vis-Fantas-a-Cafe-109.jpg",
+        altText: "Pantalón Mariscal hombre color café",
+        productPageUrl: "/productos/mariscal-pantalon-109"
+    }
+];
+
+const productosInteresantes = [
+    {
+        id: "JOHPANVESPOVFANNEGT42AD949",
+        name: "Pantalón Vestir Fantasía John Henry Hombre 949",
+        price: "$1158.00",
+        imageSrc: "https://i.postimg.cc/2y4kwVPV/John-Henry-Pantal-n-Vestir-Pol-Vis-Fantas-a-Negro-949.jpg",
+        altText: "Pantalón de vestir John Henry hombre color negro",
+        productPageUrl: "/productos/john-henry-pantalon-negro-949"
+    },
+    {
+        id: "JOHPANVESPOVFANMART42AD943",
+        name: "Pantalón Vestir Fantasía John Henry Hombre 943",
+        price: "$1158.00",
+        imageSrc: "https://i.postimg.cc/7YDQ51jh/John-Henry-Pantal-n-Vestir-Pol-Vis-Fantas-a-Marino-943.jpg",
+        altText: "Pantalón de vestir John Henry hombre color marino",
+        productPageUrl: "/productos/john-henry-pantalon-marino-943"
+    },
+    {
+        id: "MARPANVESPOVFANCAFT42AD261",
+        name: "Pantalón Vestir Fantasía Mariscal Hombre 261",
+        price: "$999.00",
+        imageSrc: "https://i.postimg.cc/j2sBpP6F/Mariscal-Pantal-n-Vestir-Pol-Vis-Fantas-a-Caf-261.jpg",
+        altText: "Pantalón de vestir Mariscal hombre color café",
+        productPageUrl: "/productos/mariscal-pantalon-cafe-261"
+    },
+    {
+        id: "JOHPANVESPOVFANAZUT42AD895",
+        name: "Pantalón Vestir Fantasía John Henry Hombre 895",
+        price: "$1158.00",
+        imageSrc: "https://i.postimg.cc/BQVjb61y/John-Henry-Pantal-n-Vestir-Pol-Vis-Fantas-a-Azul-895.jpg",
+        altText: "Pantalón de vestir John Henry hombre color azul",
+        productPageUrl: "/productos/john-henry-pantalon-azul-895"
+    },
+    {
+        id: "MARPANVESPOVCUAVERT42AD293",
+        name: "Pantalón Vestir Cuadros Mariscal Hombre 293",
+        price: "$999.00",
+        imageSrc: "https://i.postimg.cc/3xwcyBVQ/Mariscal-Pantal-n-Vestir-Pol-Vis-Cuadros-Verde-293.jpg",
+        altText: "Pantalón de vestir Mariscal hombre cuadros verdes",
+        productPageUrl: "/productos/mariscal-pantalon-cuadros-verde-293"
+    }
+];
+
+// --- Placeholder Functions to resolve ReferenceErrors ---
+function loadCart() {
+    console.log("Placeholder: loadCart() called. Implement cart loading logic here.");
+    // TODO: Implement actual cart loading logic, e.g., from localStorage
+    // Example: const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+    // updateCartUI(cartItems);
+}
+
+function loadWishlist() {
+    console.log("Placeholder: loadWishlist() called. Implement wishlist loading logic here.");
+    // TODO: Implement actual wishlist loading logic, e.g., from localStorage
+    // Example: const wishlistItems = JSON.parse(localStorage.getItem('wishlist')) || [];
+    // updateWishlistUI(wishlistItems);
+}
+
+function handleSearch() {
+    console.log("Placeholder: handleSearch() called. Implement search handling logic here.");
+    // TODO: Implement actual search logic, e.g., event listeners for search input and button.
+}
+
+function setupStickyHeader() {
+    console.log("Placeholder: setupStickyHeader() called. Implement sticky header logic here.");
+    // TODO: Implement actual sticky header logic, e.g., adding/removing a class on scroll.
+}
+
+function setupFitFinder() {
+    console.log("Placeholder: setupFitFinder() called. Implement Fit Finder logic here.");
+    // TODO: Implement actual Fit Finder logic.
+}
+
+function handleCountrySelector() {
+    console.log("Placeholder: handleCountrySelector() called. Implement country selector logic here.");
+    // TODO: Implement actual country selector logic.
+}
+
+function handleMobileMenu() {
+    console.log("Placeholder: handleMobileMenu() called. Implement mobile menu logic here.");
+    // TODO: Implement actual mobile menu logic, e.g., toggling a class on a navigation element.
+}
+
+// --- DOMContentLoaded (Modificado para poblar carruseles) ---
+document.addEventListener('DOMContentLoaded', () => {
+    loadCart();
+    loadWishlist();
+    handleSearch(); // Configurar la búsqueda
+    setupStickyHeader();
+    // setupProductFilters(); // Si se usa filtrado dinámico
+    setupFitFinder(); // Configurar el Fit Finder
+    handleCountrySelector(); // Configurar selector de país
+    handleMobileMenu(); // Configurar menú móvil
+    handleCookieConsent();
+    updateCountryDisplay("MX");
+
+    // Poblar carruseles con datos dinámicos PRIMERO
+    populateCarousel('combinar-con', productosParaCombinar);
+    populateCarousel('tambien-te-puede-interesar', productosInteresantes);
+
+    // LUEGO inicializar la funcionalidad del carrusel
+    const carousels = document.querySelectorAll('.carousel-section');
+    carousels.forEach(carousel => {
+        initializeCarousel(carousel);
+    });
+});
+
+// --- Funciones para Carruseles Dinámicos ---
+function createProductCardHTML(product) {
+    return `
+        <div class="related-product-item product-card" data-id="${product.id}">
+            <div class="product-image-container">
+                <img src="${product.imageSrc}" alt="${product.altText}">
+            </div>
+            <h3>${product.name}</h3>
+            <p>${product.price}</p>
+            <a href="${product.productPageUrl}" class="carousel-product-link">
+                <button>Ver producto</button>
+            </a>
+        </div>`;
+}
+
+function populateCarousel(carouselId, productsArray) {
+    console.log(`[POPULATE] Iniciando populateCarousel para ID: ${carouselId}`); // LOG INICIO
+
+    const carouselSection = document.getElementById(carouselId);
+    if (!carouselSection) {
+        console.error(`[POPULATE ERROR] No se encontró la sección del carrusel con ID: ${carouselId}`);
+        return;
+    }
+    console.log(`[POPULATE] Sección encontrada para ID ${carouselId}:`, carouselSection); // LOG SECCIÓN ENCONTRADA
+
+    const track = carouselSection.querySelector('.carousel-track');
+    if (!track) {
+        console.error(`[POPULATE ERROR] No se encontró .carousel-track dentro de la sección con ID: ${carouselId}`);
+        return;
+    }
+    console.log(`[POPULATE] Track encontrado para ID ${carouselId}:`, track); // LOG TRACK ENCONTRADO
+
+    console.log(`[POPULATE] Limpiando track para ID: ${carouselId}. Contenido actual:`, track.innerHTML); // LOG ANTES DE LIMPIAR
+    track.innerHTML = ''; // Limpiar productos estáticos o previos
+    console.log(`[POPULATE] Track limpio para ID: ${carouselId}. Contenido después:`, track.innerHTML); // LOG DESPUÉS DE LIMPIAR
+
+    console.log(`[POPULATE] Populando ID: ${carouselId} con ${productsArray.length} productos.`); // LOG NÚMERO DE PRODUCTOS
+
+    productsArray.forEach(product => {
+        const productHTML = createProductCardHTML(product);
+        track.innerHTML += productHTML;
+    });
+    console.log(`[POPULATE] Finalizado populateCarousel para ID: ${carouselId}. Contenido final del track:`, track.innerHTML); // LOG FINAL
+}
+
+// --- Fin del Script ---
+console.log("Script Novedades Gaytan cargado y ejecutado.");
+//
