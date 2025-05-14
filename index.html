@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novedades Gaytan - Lo mejor en vestir</title>
+    <!-- Asegúrate que la ruta al logo es correcta -->
+    <link rel="icon" href="img/logo_novedades_gaytan.jpg" type="image/jpg">
+
+    <!-- Font Awesome (CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Enlace a tu archivo CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+
+</head>
+<body>
+
+    <header>
+        <div class="header-top-bar">
+            <div class="language-currency-selector">
+                <select id="language-switcher" aria-label="Seleccionar idioma">
+                    <option value="es">Español (ES)</option>
+                    <option value="en">English (EN)</option>
+                </select>
+                <button id="country-preferences-btn" aria-label="Preferencias de país y moneda">
+                    <!-- La bandera se actualizará con JS -->
+                    <img src="https://flagcdn.com/16x12/mx.png" alt="Bandera México" id="current-country-flag"> México (MXN)
+                </button>
+            </div>
+            <div class="top-bar-links">
+                <a href="#page-help">Ayuda y Preguntas frecuentes</a>
+            </div>
+        </div>
+
+        <div class="header-main">
+            <div class="logo">
+                <a href="#page-home">
+                     <!-- Asegúrate que la ruta al logo es correcta -->
+                    <img src="img/logo_novedades_gaytan.jpg" alt="Novedades Gaytan Logo">
+                </a>
+            </div>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle-button" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-navigation-menu gender-navigation-menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav class="gender-nav" id="gender-navigation-menu" aria-label="Navegación por género">
+                 <ul>
+                    <li><a href="#mujer-section">MUJER</a></li>
+                    <li><a href="#hombre-section" class="active" data-gender="hombre">HOMBRE</a></li>
+                </ul>
+            </nav>
+            <div class="search-bar">
+                <form action="/search" method="get" onsubmit="return false;"> <!-- Evitar envío real -->
+                    <input type="search" name="q" placeholder="Buscar artículos y marcas" aria-label="Buscar artículos y marcas">
+                    <button type="submit" aria-label="Buscar"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+            <div class="user-actions">
+                <a href="#page-account" aria-label="Mi cuenta"><i class="fas fa-user"></i></a>
+                <a href="#page-wishlist" aria-label="Lista de deseos"><i class="fas fa-heart"></i> <span class="item-count wishlist-count">(0)</span></a>
+                <a href="#page-cart" aria-label="Mi bolsa"><i class="fas fa-shopping-bag"></i> <span class="item-count cart-count">(0)</span></a>
+            </div>
+        </div>
+
+        <nav class="main-nav" id="main-navigation-menu" aria-label="Navegación principal de productos">
+            <ul>
+                <li class="nav-item-ropa" aria-haspopup="true"><a href="#plp-ropa">Ropa</a>
+                    <div class="mega-menu" role="group" aria-label="Submenú de Ropa">
+                        <!-- Contenido del Mega Menu para Ropa -->
+                        <div class="mega-menu-column">
+                            <h4>NOVEDADES</h4>
+                            <ul><li><a href="#">Ver todo</a></li><li><a href="#">Últimos lanzamientos</a></li><li><a href="#">Próximamente</a></li></ul>
+                        </div>
+                        <div class="mega-menu-column">
+                            <h4>COMPRAR POR PRODUCTO</h4>
+                            <ul><li><a href="#">Camisas</a></li><li><a href="#">Pantalones</a></li><li><a href="#">Trajes</a></li><li><a href="#">Chamarras y Abrigos</a></li><li><a href="#">Playeras</a></li></ul>
+                        </div>
+                        <div class="mega-menu-column">
+                            <h4>TENDENCIAS</h4>
+                            <div class="img-link-item"><img src="https://via.placeholder.com/40x40/1A2C5E/FFFFFF?text=T1" alt="Tendencia 1"><a href="#">Estilo Urbano</a></div>
+                            <div class="img-link-item"><img src="https://via.placeholder.com/40x40/1A2C5E/FFFFFF?text=T2" alt="Tendencia 2"><a href="#">Ropa Formal Moderna</a></div>
+                        </div>
+                        <div class="mega-menu-column mega-menu-image-featured">
+                            <a href="#"><img src="https://via.placeholder.com/250x300/e0e0e0/333?text=Colección+Destacada" alt="Colección Destacada Ropa"></a>
+                            <a href="#" class="cta-button secondary">Ver Colección Ropa</a>
+                        </div>
+                    </div>
+                </li>
+                <!-- Repetir estructura para otros elementos del menú -->
+                <li><a href="#plp-tendencia">Tendencia</a></li>
+                <li><a href="#plp-zapatos">Zapatos</a></li>
+                <li><a href="#plp-ropa-deportiva">Ropa deportiva</a></li>
+                <li><a href="#plp-accesorios">Accesorios</a></li>
+                <li><a href="#plp-trajes">Trajes</a></li>
+                <li><a href="#plp-marcas">Marcas</a></li>
+                <li class="sale-link"><a href="#ofertas">Ofertas -30%</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- 🏠 HOMEPAGE SECTION -->
+        <section id="page-home" class="page-section active">
+            <section class="hero-banner" style="background-image: url('https://via.placeholder.com/1500x500/1A2C5E/FFFFFF?text=Novedades+Gaytan');">
+                <h1>Lo Mejor en Vestir para Caballero</h1>
+                <p>Descubre las últimas tendencias y clásicos atemporales.</p>
+                <a href="#plp-novedades" class="cta-button">Ver Novedades</a>
+            </section>
+
+            <section class="content-grid">
+                <h2>Descubre Nuestras Categorías</h2>
+                <div class="category-card-container">
+                    <div class="category-card">
+                        <img src="https://via.placeholder.com/300x350/F5F5F7/1A2C5E?text=Camisas" alt="Camisas">
+                        <p>Camisas Elegantes</p>
+                    </div>
+                    <div class="category-card">
+                        <img src="https://via.placeholder.com/300x350/F5F5F7/1A2C5E?text=Pantalones" alt="Pantalones">
+                        <p>Pantalones de Vestir y Casuales</p>
+                    </div>
+                    <div class="category-card">
+                        <img src="https://via.placeholder.com/300x350/F5F5F7/1A2C5E?text=Trajes" alt="Trajes">
+                        <p>Trajes Impecables</p>
+                    </div>
+                    <div class="category-card">
+                        <img src="https://via.placeholder.com/300x350/F5F5F7/1A2C5E?text=Accesorios" alt="Accesorios">
+                        <p>Accesorios con Estilo</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="product-carousel-section" style="background-color: var(--gris-claro-sutil); padding: 30px 0;">
+                <h2 class="text-center">Productos Destacados</h2>
+                <div class="product-carousel-items">
+                    <article class="product-card">
+                        <img src="https://i.postimg.cc/ZR1pdv1w/John-Henry-Camisa-Vestir-M-L-Slim-Fit-Pol-Alg-Liso-Negro-010.jpg" alt="Camisa de vestir John Henry hombre color negro">
+                        <button class="wishlist-icon" onclick="toggleWishlist(this, 'JOHCAMVLSPOALISNEGT1453010')"><i class="far fa-heart"></i></button>
+                        <h3>Camisa Vestir M/ L Slim Fit Liso John Henry Hombre 010</h3>
+                        <p class="price">$1030.00</p>
+                        <button class="cta-button small-cta" onclick="viewProduct('JOHCAMVLSPOALISNEGT1453010')">Ver Detalles</button>
+                    </article>
+                    <article class="product-card">
+                        <img src="https://i.postimg.cc/4NyzWnk4/Mariscal-Camisa-Vestir-M-L-Pol-Alg-Liso-Beige-001.jpg" alt="Camisa de vestir Mariscal hombre color beige">
+                        <button class="wishlist-icon" onclick="toggleWishlist(this, 'MARCAMVMLPOALISBEIT1453001')"><i class="far fa-heart"></i></button>
+                        <h3>Camisa Vestir M/ L Liso Mariscal Hombre 001</h3>
+                        <p class="price">$879.00</p>
+                        <button class="cta-button small-cta" onclick="viewProduct('MARCAMVMLPOALISBEIT1453001')">Ver Detalles</button>
+                    </article>
+                    <article class="product-card">
+                        <img src="https://i.postimg.cc/Zq58tS8x/John-Henry-Camisa-Vestir-M-L-Slim-Fit-Pol-Alg-Liso-Marino-010.jpg" alt="Camisa de vestir John Henry hombre color marino">
+                        <button class="wishlist-icon" onclick="toggleWishlist(this, 'JOHCAMVMLPOALISMART1453010')"><i class="far fa-heart"></i></button>
+                        <h3>Camisa Vestir M/ L Slim Fit Liso John Henry Hombre 010 (Marino)</h3>
+                        <p class="price">$1030.00</p>
+                        <button class="cta-button small-cta" onclick="viewProduct('JOHCAMVMLPOALISMART1453010')">Ver Detalles</button>
+                    </article>
+                    <article class="product-card">
+                        <img src="https://i.postimg.cc/W4Dt0P03/Excellence-Camisa-Vestir-M-L-Slim-Fit-Pol-Alg-Liso-Amarillo-002.jpg" alt="Camisa de vestir Excellence hombre color amarillo">
+                        <button class="wishlist-icon" onclick="toggleWishlist(this, 'EXCCAMVLSPOALISAMAT1453002')"><i class="far fa-heart"></i></button>
+                        <h3>Camisa Vestir M/ L Slim Fit Liso Excellence Hombre 002</h3>
+                        <p class="price">$679.00</p>
+                        <button class="cta-button small-cta" onclick="viewProduct('EXCCAMVLSPOALISAMAT1453002')">Ver Detalles</button>
+                    </article>
+                    <article class="product-card">
+                        <img src="https://i.postimg.cc/9QrHXP33/Mariscal-Pantal-n-Vestir-Pol-Vis-Fantas-a-Cafe-109.jpg" alt="Pantalón Mariscal hombre color café">
+                        <button class="wishlist-icon" onclick="toggleWishlist(this, 'MARPANVESPOVFANCAFT42AD109')"><i class="far fa-heart"></i></button>
+                        <h3>Pantalón Vestir Fantasía Mariscal Hombre 109</h3>
+                        <p class="price">$999.00</p>
+                        <button class="cta-button small-cta" onclick="viewProduct('MARPANVESPOVFANCAFT42AD109')">Ver Detalles</button>
+                    </article>
+                    <!-- Productos estáticos eliminados de aquí -->
+                    <!-- ... más productos dinámicos se cargarían aquí -->
+                </div>
+                <div class="text-center" style="margin-top: 20px;">
+                    <a href="#plp-todos" class="cta-button secondary">Ver Todos los Productos</a>
+                </div>
+            </section>
+
+            <section class="about-us-home" style="padding: 30px 20px; text-align: center;">
+                <h2>Sobre Novedades Gaytan</h2>
+                <p>Novedades Gaytán es una empresa dedicada a la venta de ropa casual y de vestir para caballero.</p>
+                <p><strong>Horarios:</strong><br>
+                    Lun, Mar, Mié, Vie, Sáb: 9:30 am - 3:00 pm y 4:30 pm - 8:00 pm<br>
+                    Jue, Domingo: 9:30 am - 3:00 pm
+                </p>
+                <p><strong>Ubicación:</strong><br> Av. Miguel Hidalgo #8, 38800 Moroleón, Guanajuato, México<br>
+                    <a href="https://maps.google.com/maps/search/Novedades%20Gaytan/@20.131,-101.1899,17z?hl=es" target="_blank" style="color:var(--rojo-energetico);">Ver en Google Maps</a>
+                </p>
+            </section>
+        </section>
+
+        <!-- 🛍️ PRODUCT LISTING PAGE (PLP) SECTION -->
+        <section id="page-plp" class="page-section">
+             <div class="plp-container">
+                <aside class="filters-sidebar">
+                    <h3>Filtrar por:</h3>
+                    <div class="filter-group">
+                        <h4>Ordenar por:</h4>
+                        <select id="sort-by">
+                            <option value="recommended">Recomendado</option>
+                            <option value="newest">Novedades</option>
+                            <option value="price_high_low">Precio: de mayor a menor</option>
+                            <option value="price_low_high">Precio: de menor a mayor</option>
+                        </select>
+                    </div>
+                    <!-- Más filtros (Marca, Categoría, Talla, Color, etc.) -->
+                     <div class="filter-group">
+                        <h4>Categoría:</h4>
+                        <ul>
+                            <li><label><input type="checkbox" name="category" value="camisas"> Camisas</label></li>
+                            <li><label><input type="checkbox" name="category" value="pantalones"> Pantalones</label></li>
+                            <li><label><input type="checkbox" name="category" value="trajes"> Trajes</label></li>
+                            <li><label><input type="checkbox" name="category" value="chamarras"> Chamarras</label></li>
+                        </ul>
+                    </div>
+                    <div class="filter-group">
+                        <h4>Talla:</h4>
+                         <select id="filter-size">
+                            <option value="">Todas</option>
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                            <option value="30">30</option>
+                            <option value="32">32</option>
+                            <option value="34">34</option>
+                         </select>
+                    </div>
+                    <div class="filter-group">
+                        <h4>Color:</h4>
+                        <div class="color-swatches">
+                            <button style="background-color: white;" aria-label="Blanco" data-color="Blanco"></button>
+                            <button style="background-color: black;" aria-label="Negro" data-color="Negro"></button>
+                            <button style="background-color: #1A2C5E;" aria-label="Azul Marino" data-color="Azul Marino"></button>
+                            <button style="background-color: gray;" aria-label="Gris" data-color="Gris"></button>
+                        </div>
+                    </div>
+                     <button class="cta-button secondary" style="width:100%; margin-top:10px;">Aplicar Filtros</button>
+                </aside>
+                <div class="product-grid-container">
+                    <h1>Catálogo de Ropa</h1>
+                    <p><span id="plp-item-count">120</span> estilos encontrados</p>
+                    <div class="product-grid">
+                        <!-- Product cards (simulados) -->
+                        <article class="product-card" data-product-id="JOHPANVESPOVFANNEGT42AD949">
+                            <img src="https://i.postimg.cc/2y4kwVPV/John-Henry-Pantal-n-Vestir-Pol-Vis-Fantas-a-Negro-949.jpg" alt="Pantalón de vestir John Henry hombre color negro">
+                            <button class="wishlist-icon" onclick="toggleWishlist(this, 'JOHPANVESPOVFANNEGT42AD949')"><i class="far fa-heart"></i></button>
+                            <h3>Pantalón Vestir Fantasía John Henry Hombre 949</h3>
+                            <p class="price">$1158.00</p>
+                            <button class="cta-button small-cta" onclick="viewProduct('JOHPANVESPOVFANNEGT42AD949')">Ver Detalles</button>
+                        </article>
+                        <article class="product-card" data-product-id="JOHPANVESPOVFANMART42AD943">
+                            <img src="https://i.postimg.cc/7YDQ51jh/John-Henry-Pantal-n-Vestir-Pol-Vis-Fantas-a-Marino-943.jpg" alt="Pantalón de vestir John Henry hombre color marino">
+                            <button class="wishlist-icon" onclick="toggleWishlist(this, 'JOHPANVESPOVFANMART42AD943')"><i class="far fa-heart"></i></button>
+                            <h3>Pantalón Vestir Fantasía John Henry Hombre 943</h3>
+                            <p class="price">$1158.00</p>
+                            <button class="cta-button small-cta" onclick="viewProduct('JOHPANVESPOVFANMART42AD943')">Ver Detalles</button>
+                        </article>
+                        <article class="product-card" data-product-id="MARPANVESPOVFANCAFT42AD261">
+                            <img src="https://i.postimg.cc/j2sBpP6F/Mariscal-Pantal-n-Vestir-Pol-Vis-Fantas-a-Caf-261.jpg" alt="Pantalón de vestir Mariscal hombre color café">
+                            <button class="wishlist-icon" onclick="toggleWishlist(this, 'MARPANVESPOVFANCAFT42AD261')"><i class="far fa-heart"></i></button>
+                            <h3>Pantalón Vestir Fantasía Mariscal Hombre 261</h3>
+                            <p class="price">$999.00</p>
+                            <button class="cta-button small-cta" onclick="viewProduct('MARPANVESPOVFANCAFT42AD261')">Ver Detalles</button>
+                        </article>
+                        <article class="product-card" data-product-id="JOHPANVESPOVFANAZUT42AD895">
+                            <img src="https://i.postimg.cc/BQVjb61y/John-Henry-Pantal-n-Vestir-Pol-Vis-Fantas-a-Azul-895.jpg" alt="Pantalón de vestir John Henry hombre color azul">
+                            <button class="wishlist-icon" onclick="toggleWishlist(this, 'JOHPANVESPOVFANAZUT42AD895')"><i class="far fa-heart"></i></button>
+                            <h3>Pantalón Vestir Fantasía John Henry Hombre 895</h3>
+                            <p class="price">$1158.00</p>
+                            <button class="cta-button small-cta" onclick="viewProduct('JOHPANVESPOVFANAZUT42AD895')">Ver Detalles</button>
+                        </article>
+                        <article class="product-card" data-product-id="MARPANVESPOVCUAVERT42AD293">
+                            <img src="https://i.postimg.cc/3xwcyBVQ/Mariscal-Pantal-n-Vestir-Pol-Vis-Cuadros-Verde-293.jpg" alt="Pantalón de vestir Mariscal hombre cuadros verdes">
+                            <button class="wishlist-icon" onclick="toggleWishlist(this, 'MARPANVESPOVCUAVERT42AD293')"><i class="far fa-heart"></i></button>
+                            <h3>Pantalón Vestir Cuadros Mariscal Hombre 293</h3>
+                            <p class="price">$999.00</p>
+                            <button class="cta-button small-cta" onclick="viewProduct('MARPANVESPOVCUAVERT42AD293')">Ver Detalles</button>
+                        </article>
+                        <!-- Se agregarían más productos dinámicamente -->
+                    </div>
+                    <div class="pagination">
+                        <button id="load-more-products" class="cta-button secondary">CARGAR MÁS</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 👕 PRODUCT DETAIL PAGE (PDP) SECTION -->
+        <section id="page-pdp" class="page-section">
+            <section class="product-detail">
+                <h2>Producto Principal</h2>
+                <img src="#" alt="Producto Principal" style="width:300px; height:auto;">
+                <p>Descripción del producto principal.</p>
+                <p>Precio: $100.00</p>
+                <button>Añadir al carrito</button>
+            </section>
+
+            <section class="carousel-section related-products" id="combinar-con">
+                <h2>Combínalo con</h2>
+                <div class="carousel-viewport">
+                    <button class="carousel-arrow prev" aria-label="Anterior">❮</button>
+                    <div class="carousel-track">
+                        <!-- Productos se cargarán dinámicamente con JavaScript -->
+                    </div>
+                    <button class="carousel-arrow next" aria-label="Siguiente">❯</button>
+                </div>
+            </section>
+
+            <section class="carousel-section also-like-products" id="tambien-te-puede-interesar">
+                <h2>También te puede interesar</h2>
+                <div class="carousel-viewport">
+                    <button class="carousel-arrow prev" aria-label="Anterior">❮</button>
+                    <div class="carousel-track">
+                        <article class="product-card">
+                            <img src="https://i.postimg.cc/2y4kwVPV/John-Henry-Pantal-n-Vestir-Pol-Vis-Fantas-a-Negro-949.jpg" alt="Pantalón de vestir John Henry hombre color negro">
+                            <button class="wishlist-icon" onclick="toggleWishlist(this, 'JOHPANVESPOVFANNEGT42AD949')"><i class="far fa-heart"></i></button>
+                            <h3>Pantalón Vestir Fantasía John Henry Hombre 949</h3>
+                            <p class="price">$1158.00</p>
+                            <button class="cta-button small-cta" onclick="viewProduct('JOHPANVESPOVFANNEGT42AD949')">Ver Detalles</button>
+                        </article>
+                        <article class="product-card">
+                            <img src="https://i.postimg.cc/7YDQ51jh/John-Henry-Pantal-n-Vestir-Pol-Vis-Fantas-a-Marino-943.jpg" alt="Pantalón de vestir John Henry hombre color marino">
+                            <button class="wishlist-icon" onclick="toggleWishlist(this, 'JOHPANVESPOVFANMART42AD943')"><i class="far fa-heart"></i></button>
+                            <h3>Pantalón Vestir Fantasía John Henry Hombre 943</h3>
+                            <p class="price">$1158.00</p>
+                            <button class="cta-button small-cta" onclick="viewProduct('JOHPANVESPOVFANMART42AD943')">Ver Detalles</button>
+                        </article>
+                        <article class="product-card">
+                            <img src="https://i.postimg.cc/j2sBpP6F/Mariscal-Pantal-n-Vestir-Pol-Vis-Fantas-a-Caf-261.jpg" alt="Pantalón de vestir Mariscal hombre color café">
+                            <button class="wishlist-icon" onclick="toggleWishlist(this, 'MARPANVESPOVFANCAFT42AD261')"><i class="far fa-heart"></i></button>
+                            <h3>Pantalón Vestir Fantasía Mariscal Hombre 261</h3>
+                            <p class="price">$999.00</p>
+                            <button class="cta-button small-cta" onclick="viewProduct('MARPANVESPOVFANCAFT42AD261')">Ver Detalles</button>
+                        </article>
+                        <article class="product-card">
+                            <img src="https://i.postimg.cc/BQVjb61y/John-Henry-Pantal-n-Vestir-Pol-Vis-Fantas-a-Azul-895.jpg" alt="Pantalón de vestir John Henry hombre color azul">
+                            <button class="wishlist-icon" onclick="toggleWishlist(this, 'JOHPANVESPOVFANAZUT42AD895')"><i class="far fa-heart"></i></button>
+                            <h3>Pantalón Vestir Fantasía John Henry Hombre 895</h3>
+                            <p class="price">$1158.00</p>
+                            <button class="cta-button small-cta" onclick="viewProduct('JOHPANVESPOVFANAZUT42AD895')">Ver Detalles</button>
+                        </article>
+                        <article class="product-card">
+                            <img src="https://i.postimg.cc/3xwcyBVQ/Mariscal-Pantal-n-Vestir-Pol-Vis-Cuadros-Verde-293.jpg" alt="Pantalón de vestir Mariscal hombre cuadros verdes">
+                            <button class="wishlist-icon" onclick="toggleWishlist(this, 'MARPANVESPOVCUAVERT42AD293')"><i class="far fa-heart"></i></button>
+                            <h3>Pantalón Vestir Cuadros Mariscal Hombre 293</h3>
+                            <p class="price">$999.00</p>
+                            <button class="cta-button small-cta" onclick="viewProduct('MARPANVESPOVCUAVERT42AD293')">Ver Detalles</button>
+                        </article>
+                    </div>
+                    <button class="carousel-arrow next" aria-label="Siguiente">❯</button>
+                </div>
+            </section>
+        </section>
+
+        <!-- 🛒 CART PAGE SECTION -->
+        <section id="page-cart" class="page-section">
+            <div class="cart-container">
+                <h1>Mi Bolsa <span class="cart-page-item-count">(0 artículos)</span></h1>
+                <div class="cart-items-container">
+                    <!-- Los artículos del carrito se agregarán aquí por JS -->
+                    <p class="empty-cart-message">Tu bolsa está vacía.</p>
+                </div>
+                <div class="cart-summary" style="display:none;">
+                    <p>Subtotal: <span id="cart-subtotal-display">$0.00 MXN</span></p>
+                    <p>Envío: <span id="cart-shipping-display">$0.00 MXN</span></p>
+                    <p class="free-shipping-promo" style="color:var(--rojo-energetico); font-weight:bold; display:none;">¡Faltan <span id="amount-for-free-shipping"></span> para envío GRATIS!</p>
+                    <hr>
+                    <p><strong>TOTAL A PAGAR: <span id="cart-total-display" style="color:var(--rojo-energetico);">$0.00 MXN</span></strong></p>
+                    <div class="promo-code">
+                        <label for="promo-code-input-cart">Código de Descuento:</label>
+                        <input type="text" id="promo-code-input-cart" placeholder="Introduce tu código">
+                        <button class="cta-button secondary small-cta">Aplicar</button>
+                    </div>
+                    <button class="cta-button" id="checkout-button" style="width:100%; margin-top:15px;">PROCEDER AL PAGO</button>
+                    <div class="accepted-payments text-center" style="margin-top:10px;">
+                        Aceptamos: <i class="fab fa-cc-visa"></i> <i class="fab fa-cc-mastercard"></i> <i class="fab fa-paypal"></i> <img src="https://img.icons8.com/color/48/000000/mercado-pago.png" alt="MercadoPago" style="height:24px; vertical-align:middle;">
+                    </div>
+                </div>
+                 <div class="shipping-info-cart" style="margin-top: 20px; padding: 15px; background-color: var(--gris-claro-sutil); border-radius: 5px;">
+                    <p><i class="fas fa-truck"></i> Ofrecemos envío gratis a partir de una compra mínima de $999.00 MXN para compras nacionales. En compras al extranjero no realizamos envíos gratis.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 👤 ACCOUNT PAGE SECTION -->
+        <section id="page-account" class="page-section">
+             <div class="account-container">
+                <aside class="account-nav">
+                    <div class="user-greeting">
+                        <div id="user-initials-avatar">NG</div>
+                        <p>Hola, <span id="account-username">Novedades Gaytan</span></p>
+                    </div>
+                    <ul>
+                        <li><a href="#" class="account-link active" data-target="account-dashboard-content">Mi Cuenta</a></li>
+                        <li><a href="#" class="account-link" data-target="account-orders-content">Mis pedidos</a></li>
+                        <li><a href="#" class="account-link" data-target="account-details-content">Mis datos</a></li>
+                        <li><a href="#" class="account-link" data-target="account-addresses-content">Libreta de direcciones</a></li>
+                        <li><a href="#" class="account-link" data-target="account-payment-methods-content">Mis formas de pago</a></li>
+                        <li><a href="#" class="account-link" data-target="account-contact-prefs-content">Preferencias de contacto</a></li>
+                        <li><a href="#" onclick="logout()">Salir</a></li>
+                    </ul>
+                </aside>
+                <div class="account-content">
+                    <div id="account-dashboard-content" class="account-subsection active">
+                        <h2>Bienvenido a tu Cuenta</h2>
+                        <p>Desde aquí puedes gestionar tus pedidos, datos personales y preferencias.</p>
+                    </div>
+                    <div id="account-orders-content" class="account-subsection">
+                        <h2>Mis Pedidos</h2>
+                        <p>Actualmente no tienes ningún pedido.</p>
+                         <!-- Ejemplo de pedido
+                         <div class="order-summary-card">
+                            <p><strong>Pedido #12345</strong> - Realizado el 01/08/2023</p>
+                            <p>Total: $2649.00 MXN - Estado: Enviado</p>
+                            <a href="#">Ver Detalles</a> | <a href="#">Rastrear Envío</a>
+                         </div>
+                         -->
+                    </div>
+                    <div id="account-details-content" class="account-subsection">
+                        <h2>Mis Datos Personales</h2>
+                        <form id="account-details-form">
+                            <label for="acc-nombre">Nombre:</label> <input type="text" id="acc-nombre" value="Novedades" required>
+                            <label for="acc-apellidos">Apellidos:</label> <input type="text" id="acc-apellidos" value="Gaytan" required>
+                            <label for="acc-email-account">Email:</label> <input type="email" id="acc-email-account" value="casagaytan.mo@gmail.com" required>
+                            <label for="acc-telefono">Teléfono (opcional):</label> <input type="text" id="acc-telefono">
+                            <label for="acc-password">Cambiar Contraseña:</label> <input type="password" id="acc-password">
+                            <label for="acc-password-confirm">Confirmar Contraseña:</label> <input type="password" id="acc-password-confirm">
+                            <button type="submit" class="cta-button">Guardar Cambios</button>
+                        </form>
+                    </div>
+                    <div id="account-addresses-content" class="account-subsection">
+                        <h2>Libreta de Direcciones</h2>
+                        <p>No tienes direcciones guardadas.</p>
+                        <button class="cta-button secondary">Añadir Nueva Dirección</button>
+                         <!-- Ejemplo dirección
+                         <div class="address-card">
+                            <p><strong>Dirección Principal</strong></p>
+                            <p>Novedades Gaytan<br>Av Miguel Hidalgo 8<br>Moroleon, Guanajuato, 38800<br>México</p>
+                            <button>Editar</button> <button>Eliminar</button>
+                         </div>
+                          -->
+                    </div>
+                    <div id="account-payment-methods-content" class="account-subsection">
+                        <h2>Mis Formas de Pago</h2>
+                        <p>No tienes formas de pago guardadas.</p>
+                         <button class="cta-button secondary">Añadir Forma de Pago</button>
+                    </div>
+                    <div id="account-contact-prefs-content" class="account-subsection">
+                        <h2>Preferencias de Contacto</h2>
+                         <p>Elige cómo quieres que te contactemos:</p>
+                         <label><input type="checkbox" checked> Email (Novedades y ofertas)</label><br>
+                         <label><input type="checkbox"> SMS (Notificaciones de pedido)</label><br>
+                         <button class="cta-button" style="margin-top:15px;">Guardar Preferencias</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ❓ HELP/FAQ PAGE SECTION -->
+        <section id="page-help" class="page-section">
+            <div style="max-width: 800px; margin: auto;">
+                <h1 class="text-center" style="color:var(--azul-corporativo);">Centro de Ayuda</h1>
+                <input type="search" placeholder="¿En qué podemos ayudarte?" style="width:100%; padding:12px; margin-bottom:30px; border:1px solid var(--gris-medio); border-radius:5px;">
+
+                <h2>Preguntas Frecuentes (FAQs)</h2>
+                <div class="faq-item">
+                    <strong>¿Hacen ropa a la medida?</strong>
+                    <p>No tenemos servicio de sastrería.</p>
+                </div>
+                <div class="faq-item">
+                    <strong>¿Hacen bastillas?</strong>
+                    <p>Sí, pero solo para ventas presenciales. Después de realizada la bastilla no hay cambios.</p>
+                </div>
+                <div class="faq-item">
+                    <strong>¿Hacen apartados?</strong>
+                    <p>Sí tenemos sistema de apartado, solo para ventas presenciales. 30 días límite para pago.</p>
+                </div>
+                <div class="faq-item">
+                    <strong>¿Ofrecen mayoreo y descuentos por mayoreo?</strong>
+                    <p>Sí, ofrecemos descuentos por mayoreo a partir de 12 piezas.</p>
+                </div>
+                <div class="faq-item">
+                    <strong>¿Qué métodos de pago tienen disponibles?</strong>
+                    <p>Utilizamos MercadoPago para hacer tus pagos electrónicos con tarjeta seguros. También puedes realizar transferencia/depósito si quieres realizarlo en efectivo; no olvides poner en la referencia de pago el nombre completo, debe ser el mismo al que haremos el envío.</p>
+                </div>
+                <div class="faq-item">
+                    <strong>¿Pueden facturar?</strong>
+                    <p>Sí podemos facturar. Para ello, manda tus datos fiscales: RFC, Razón Social, Método de pago, Uso CFDI y Correo electrónico.</p>
+                </div>
+                <div class="faq-item">
+                    <strong>¿Hacen envíos al extranjero?</strong>
+                    <p>Sí, podemos hacer envíos al extranjero. En este caso, de favor proporciona el país y el zip code de tu localidad (suele ser un número de entre 5 a 6 caracteres) para poder cotizar tu envío.</p>
+                </div>
+                <div class="faq-item">
+                    <strong>¿Ofrecen envío gratis?</strong>
+                    <p>Sí, ofrecemos envío gratis a partir de una compra mínima de $999.00 MXN para compras nacionales. En compras al extranjero no realizamos envíos gratis.</p>
+                </div>
+                 <div class="faq-item">
+                    <strong>¿Qué datos son requeridos para envío?</strong>
+                    <p>Nombre completo, Estado, Delegación/Municipio, Dirección y no. Exterior, No. Interior (si aplica), Colonia, CP, Teléfono, Referencias.</p>
+                </div>
+                <div class="faq-item">
+                    <strong>¿Cuánto tardará en llegar mi compra?</strong>
+                    <p>De 1 a 3 días hábiles para envíos nacionales.</p>
+                </div>
+                <div class="faq-item">
+                    <strong>¿Qué paqueterías usan para los envíos?</strong>
+                    <p>Las paqueterías con las que trabajamos son: FEDEX, Estafeta, DHL y PaqueteExpress. El envío se hará por medio de la que tenga una mejor disponibilidad en el momento; se te compartirá la guía de envío para su rastreo.</p>
+                </div>
+                <div class="faq-item">
+                    <strong>¿Admiten devoluciones?</strong>
+                    <p>Sí, admitimos cualquier devolución de productos, pero solo en los primeros 30 días después de la compra y solo se reembolsarán los productos que además cuenten con las siguientes especificaciones:
+                        <ul>
+                            <li>Debe tener todas sus partes en buen estado y sin alteraciones.</li>
+                            <li>Debe mantener todas sus etiquetas colocadas.</li>
+                            <li>No debe verse signo de uso, ni manchas.</li>
+                        </ul>
+                    Nosotros te proporcionaremos la guía de envío correspondiente para la devolución, solo deberás pegar la etiqueta en la caja debidamente embalada y entregar en paquetería.
+                    </p>
+                </div>
+
+                <h2 style="margin-top:30px;">Contacto</h2>
+                <div class="contact-info">
+                    <p><i class="fab fa-whatsapp"></i> WhatsApp: Para hablar con un humano escribe "Humano". (Necesitaremos tu número de WhatsApp para configurar el enlace directo).</p>
+                    <p><i class="fas fa-envelope"></i> Correo Electrónico: <a href="mailto:casagaytan.mo@gmail.com">casagaytan.mo@gmail.com</a></p>
+                    <p><i class="fas fa-globe"></i> Página Web: <a href="http://www.novvedadesgaytan.com.mx" target="_blank">www.novvedadesgaytan.com.mx</a></p>
+                    <p><i class="fab fa-facebook"></i> Facebook: <a href="http://facebook.com/NovedadesGaytan" target="_blank">facebook.com/NovedadesGaytan</a></p>
+                    <p><i class="fab fa-instagram"></i> Instagram: <a href="http://instagram.com/novedades.gaytan" target="_blank">instagram.com/novedades.gaytan</a> (Corregido a ".gaytan" como en el logo)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ❤️ WISHLIST PAGE SECTION -->
+        <section id="page-wishlist" class="page-section">
+             <h1>Mi Lista de Deseos (<span class="wishlist-page-count">0</span>)</h1>
+            <div class="wishlist-items-container">
+                <!-- Los artículos de la wishlist se agregarán aquí por JS -->
+                <p class="empty-wishlist-message">No has guardado ningún artículo todavía.</p>
+            </div>
+        </section>
+        
+        <!-- PLACEHOLDER SECTIONS (Privacy, Terms, Cookies details) -->
+        <section id="page-privacy" class="page-section"><h1>Política de Privacidad</h1><p>Contenido de la política de privacidad...</p></section>
+        <section id="page-terms" class="page-section"><h1>Términos y Condiciones</h1><p>Contenido de los términos y condiciones...</p></section>
+        <section id="page-cookies" class="page-section"><h1>Política de Cookies</h1><p>Detalles sobre el uso de cookies...</p></section>
+
+
+    </main>
+
+    <footer>
+        <div class="footer-columns">
+            <div class="footer-column">
+                <h4>Atención y Ayuda</h4>
+                <ul>
+                    <li><a href="#page-help">Ayuda / FAQs</a></li>
+                    <li><a href="#">Seguimiento de pedido</a></li>
+                    <li><a href="#page-help">Envíos y Devoluciones</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Sobre Novedades Gaytan</h4>
+                <ul>
+                    <li><a href="#">Nuestra Historia</a></li>
+                    <li><a href="https://maps.google.com/maps/search/Novedades%20Gaytan/@20.131,-101.1899,17z?hl=es" target="_blank">Ubicación</a></li>
+                    <li><a href="#">Horarios</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Más de Novedades Gaytan</h4>
+                <ul>
+                    <li><a href="#">Tarjetas regalo</a></li>
+                    <li><a href="#">Promociones</a></li>
+                </ul>
+            </div>
+             <div class="footer-column">
+                <h4>Síguenos</h4>
+                <div class="social-icons">
+                    <a href="http://facebook.com/NovedadesGaytan" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="http://instagram.com/novedades.gaytan" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a> <!-- Enlazar a tu WhatsApp -->
+                </div>
+                 <h4 style="margin-top:15px;">Pagos Seguros</h4>
+                 <div class="accepted-payment-methods-footer">
+                    <i class="fab fa-cc-visa"></i> <i class="fab fa-cc-mastercard"></i> <i class="fab fa-paypal"></i> <img src="https://img.icons8.com/color/48/000000/mercado-pago.png" alt="MercadoPago" style="height:24px; vertical-align:middle; background-color: white; border-radius:3px; padding:2px;">
+                </div>
+            </div>
+        </div>
+        <div class="newsletter-signup">
+            <h4>¡Recibe Nuestras Novedades y Ofertas!</h4>
+            <form id="newsletter-form-footer" onsubmit="return false;">
+                <input type="email" placeholder="Tu correo electrónico" required>
+                <button type="submit" class="cta-button">Suscribirse</button>
+            </form>
+        </div>
+        <div class="footer-bottom">
+            <p>© <span id="current-year-footer"></span> Novedades Gaytan. Todos los derechos reservados.</p>
+            <a href="#page-privacy">Política de Privacidad</a> | <a href="#page-terms">Términos y Condiciones</a> | <a href="#page-cookies">Política de Cookies</a>
+        </div>
+    </footer>
+
+    <!-- MODALS -->
+    <div id="newsletter-popup" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('newsletter-popup')">×</span>
+            <h2>¡Únete a Nuestro Club!</h2>
+            <p>Suscríbete y sé el primero en conocer nuestras novedades, ofertas exclusivas y obtén un <strong>10% de descuento</strong> en tu primera compra.</p>
+            <form id="newsletter-popup-form" onsubmit="return false;">
+                <input type="email" placeholder="Introduce tu email" required>
+                <button type="submit" class="cta-button">¡Quiero mi descuento!</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="country-prefs-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('country-prefs-modal')">×</span>
+            <h3>PREFERENCIAS DE COMPRA</h3>
+            <label for="modal-comprar-en-pais">COMPRAR EN:</label>
+            <select id="modal-comprar-en-pais">
+                <option value="MX">México</option>
+                <option value="ES">España</option>
+                <option value="US">Estados Unidos</option>
+                 <option value="OTHER">Otro (Consultar envío)</option>
+            </select>
+            <p>MONEDA: <span id="modal-display-moneda">MXN (Peso Mexicano)</span></p>
+            <button class="cta-button" onclick="updateCountryPreferences()">ACTUALIZAR PREFERENCIAS</button>
+        </div>
+    </div>
+
+    <!-- Fit Finder (Opcional, si se implementa) -->
+    <!--
+    <div id="fit-finder-modal" class="modal">
+        ...
+    </div>
+    -->
+
+    <div id="image-zoom-modal" class="modal">
+        <div class="modal-content" style="max-width: 90vw; max-height: 90vh; padding: 10px; background:transparent; border:none;">
+            <span class="close-button" onclick="closeModal('image-zoom-modal')" style="color:white; font-size:40px; top:20px; right:30px;">×</span>
+            <img id="zoomed-image-src" src="" alt="Imagen ampliada" style="width:auto; height:auto; max-width:100%; max-height:100%; object-fit:contain;">
+        </div>
+    </div>
+
+
+    <div id="cookie-consent-banner">
+        <p>Utilizamos cookies para mejorar tu experiencia en nuestro sitio. Al continuar, aceptas nuestro uso de cookies. <a href="#page-cookies" style="color:var(--rojo-energetico); text-decoration:underline;">Más información</a>.</p>
+        <button class="cta-button" onclick="acceptCookies()">Aceptar</button>
+    </div>
+
+    <!-- Enlace a tu archivo JavaScript (al final del body) -->
+    <script src="js/script.js"></script>
+</body>
+</html>
